@@ -1,35 +1,20 @@
-import Form from "./Form.jsx";
-import Weather from "./Weather.jsx";
-import {useState} from "react";
-import {api_key, base_url} from "../utils/constants.js";
+import { useDispatch, useSelector } from 'react-redux';
+import Form from './Form.jsx';
+import Weather from './Weather.jsx';
+import { fetchWeather } from '../actions/actionWeather';
 
 const Data = () => {
-    const [weatherInfo, setWeatherInfo] = useState({});
-    const [message, setMessage] = useState('Enter city name');
+    const dispatch = useDispatch();
+    const { weather, message } = useSelector((state) => state);  // Извлекаем данные из Redux store
 
-    const getWeather = city => {
-        fetch(`${base_url}?q=${city}&appid=${api_key}&units=metric`)
-            .then(result => result.json())
-            .then(data => {
-                setWeatherInfo({
-                    country: data.sys.country,
-                    city: data.name,
-                    temp: data.main.temp,
-                    pressure: data.main.pressure,
-                    sunset: new Date(data.sys.sunset * 1000)
-                })
-                setMessage('')
-            })
-            .catch(e => {
-                console.log(e);
-                setMessage('Enter correct city name')
-            })
-    }
+    const getWeather = (city) => {
+        dispatch(fetchWeather(city));
+    };
 
     return (
         <div>
-            <Form getWeather={getWeather}/>
-            <Weather message={message} weather={weatherInfo}/>
+            <Form getWeather={getWeather} />
+            <Weather message={message} weather={weather} />
         </div>
     );
 };
